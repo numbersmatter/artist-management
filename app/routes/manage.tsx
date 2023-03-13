@@ -9,6 +9,10 @@ import {
   UserIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline'
+import { json, LoaderArgs, redirect } from '@remix-run/node'
+import { requireAuth } from '~/server/auth.server'
+import { getAllIntents } from '~/server/mila.server'
+import { useLoaderData } from '@remix-run/react'
 
 const user = {
   name: 'Emily Selman',
@@ -24,11 +28,26 @@ const navigation = [
   { name: 'Profile', href: '#', icon: UserIcon },
 ]
 
+export async function loader({params, request}:LoaderArgs) {
+  const user = await requireAuth(request);
+
+  if(user.uid !== '8S2uW3Tj5oPBEhQuIAfEJpaCwQM2'){
+    redirect('/')
+  }
+
+  const submittedIntents = await getAllIntents("milachu92");
+
+  return json(submittedIntents)
+  
+}
+
 
 
 
 export default function Example() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  const { submittedIntents } = useLoaderData<typeof loader>();
 
   return (
     <>
