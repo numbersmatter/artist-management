@@ -27,33 +27,33 @@ export const loader = async ({ request }: LoaderArgs) => {
 };
 
 export const action = async ({ request }: ActionArgs) => {
-  //   get important fields from the form
-  const form = await request.formData();
-  const name = form.get("name");
-  const email = form.get("email");
-  const password = form.get("password");
+  // //   get important fields from the form
+  // const form = await request.formData();
+  // const name = form.get("name");
+  // const email = form.get("email");
+  // const password = form.get("password");
 
-  //   error if not all fields were returned or returned as non strings
-  const formError = json({ error: "Please fill all fields!" }, { status: 400 });
-  if (typeof name !== "string") return formError;
-  if (typeof email !== "string") return formError;
-  if (typeof password !== "string") return formError;
+  // //   error if not all fields were returned or returned as non strings
+  // const formError = json({ error: "Please fill all fields!" }, { status: 400 });
+  // if (typeof name !== "string") return formError;
+  // if (typeof email !== "string") return formError;
+  // if (typeof password !== "string") return formError;
 
-  //   try to sign-up user with that email address and password
-  //   if attempt fails catch that error and return it to the client with status 401
-  try {
-    const sessionCookie = await signUp(name, email, password);
-    const session = await getSession(request.headers.get("cookie"));
-    session.set("session", sessionCookie);
-    return redirect("/", {
-      headers: {
-        "Set-Cookie": await commitSession(session),
-      },
-    });
-  } catch (error) {
-    console.error(error);
-    return json({ error: String(error) }, { status: 401 });
-  }
+  // //   try to sign-up user with that email address and password
+  // //   if attempt fails catch that error and return it to the client with status 401
+  // try {
+  //   const sessionCookie = await signUp(name, email, password);
+  //   const session = await getSession(request.headers.get("cookie"));
+  //   session.set("session", sessionCookie);
+  //   return redirect("/", {
+  //     headers: {
+  //       "Set-Cookie": await commitSession(session),
+  //     },
+  //   });
+  // } catch (error) {
+  //   console.error(error);
+  //   return json({ error: String(error) }, { status: 401 });
+  // }
 };
 
 export default function Login() {
