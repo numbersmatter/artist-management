@@ -63,6 +63,7 @@ export default function Example() {
   const { submittedIntents } = useLoaderData<typeof loader>();
   console.log(submittedIntents)
 
+ 
 
   return (
     <>

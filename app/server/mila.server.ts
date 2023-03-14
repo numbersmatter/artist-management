@@ -2,6 +2,7 @@ import { FieldValue } from "firebase-admin/firestore";
 import { db, ImageObject } from "./db.server";
 // @ts-ignore
 import * as hri from "human-readable-ids";
+import IntentDoc from "~/routes/manage/$intentId";
 
 
 
@@ -48,9 +49,24 @@ export const getAllIntents=async (
   const intentsRef = db.intents(profileId).where("status", "==", "submitted");
   const intentsSnap = await intentsRef.get();
 
-  const intentsDocs = intentsSnap.docs.map((snap)=> ({...snap.data(), intentId: snap.id}))
+  const intentsDocs = intentsSnap.docs.map((snap)=> ({...snap.data(), intentId: snap.id})).sort((a,b)=> b.submittedAt?.seconds -a.submittedAt?.seconds)
 
   return intentsDocs  
+}
+
+export const getIntentResponses =async (
+  profileId:string,
+  intentId: string,
+  ) => {
+  const intentResponseSnap = await db.responses(profileId, intentId).get();
+
+  const responseData = intentResponseSnap.docs.map((docSnap) =>
+  ({
+     ...docSnap.data(),
+      docId: docSnap.id
+  }))
+
+  return responseData
 }
 
 export const isIntentValid =async (
