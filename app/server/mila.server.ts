@@ -2,7 +2,6 @@ import { FieldValue } from "firebase-admin/firestore";
 import { db, ImageObject } from "./db.server";
 // @ts-ignore
 import * as hri from "human-readable-ids";
-import IntentDoc from "~/routes/manage/$intentId";
 
 
 export const getAllOportunities = async(

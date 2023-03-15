@@ -30,9 +30,9 @@ export default function OpportunitiesMultiColumnLayout() {
       className="flex h-full min-w-0 flex-1 flex-col overflow-y-auto lg:order-last"
     >
       <h1 id="primary-heading" className="sr-only">
-        Account
+        Request details
       </h1>
-      <p> details of submission</p>
+     
       {/* Your content */}
       <Outlet />
     </section>
