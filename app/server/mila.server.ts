@@ -5,6 +5,20 @@ import * as hri from "human-readable-ids";
 import IntentDoc from "~/routes/manage/$intentId";
 
 
+export const getAllOportunities = async(
+  profileId:string,
+
+)=>{
+  const opportunitiesRef = db.opportunites(profileId);
+  const opportunitesSnap = await opportunitiesRef.get();
+
+  const opportunites = opportunitesSnap.docs.map( 
+    (OppSnap) => ({...OppSnap.data(), opportunityId: OppSnap.id})
+  );
+
+  return opportunites;
+}
+
 
 export const createMilaIntent = async (
   profileId: string,
