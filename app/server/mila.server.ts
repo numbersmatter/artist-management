@@ -49,6 +49,7 @@ export const getAllIntents=async (
   const intentsRef = db.intents(profileId).where("status", "==", "submitted");
   const intentsSnap = await intentsRef.get();
 
+  // @ts-ignore
   const intentsDocs = intentsSnap.docs.map((snap)=> ({...snap.data(), intentId: snap.id})).sort((a,b)=> b.submittedAt?.seconds -a.submittedAt?.seconds)
 
   return intentsDocs  
