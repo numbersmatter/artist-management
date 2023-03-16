@@ -1,15 +1,33 @@
-import type { ActionArgs, LoaderArgs} from "@remix-run/node";
+import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Form, Link, useLoaderData } from "@remix-run/react";
 import { requireAuth } from "~/server/auth.server";
-import { getIntentResponses, readIntentDoc, readMilaImageUpload } from "~/server/mila.server";
+import { changeReviewStatus, getIntentResponses, readIntentDoc, readMilaImageUpload } from "~/server/mila.server";
 import type { Field } from "~/server/routes-logic/formBuilder/types";
 
-export async function action({params, request}:ActionArgs) {
-  
+export async function action({ params, request }: ActionArgs) {
+  const opportunityId = params.oppId ?? "noid"
+  const intialFormData = Object.fromEntries(await request.formData());
 
-  return json({});
-}
+  const profileId = "milachu92";
+
+  let { _action, ...values } = intialFormData;
+
+  const intentId = values.intentId as string;
+  const humanReadableId = values.humanReadableId as string
+
+
+  if (_action === "hold") {
+    return await changeReviewStatus(profileId, intentId, opportunityId, humanReadableId, "hold")
+  }
+  if (_action === "accepted") {
+    return await changeReviewStatus(profileId, intentId, opportunityId, humanReadableId, "accepted")
+  }
+  if (_action === "declined") {
+    return await changeReviewStatus(profileId, intentId, opportunityId, humanReadableId, "declined")
+  }
+
+};
 
 
 
@@ -26,18 +44,6 @@ export async function loader({ params, request }: LoaderArgs) {
   const imagesUploadDoc = await readMilaImageUpload("milachu92", intentId, "step-4a")
   const imgsUploaded = imagesUploadDoc ? imagesUploadDoc.imgList : []
 
-  const numChar: Field = {
-    fieldId: "numchar",
-    type: "select",
-    label: "Number of Characters",
-    options: [
-      { label: "1 Character", value: "one_char" },
-      { label: "1.5 Characters", value: "one_half_char" },
-      { label: "2 Characters", value: "two_char" },
-      { label: "2.5 Characters", value: "two_half_char" },
-      { label: "3 Characters", value: "three_char" },
-    ]
-  }
 
 
   const step1 = responses.find((doc) => doc.docId === "step-1")?.fieldResponses
@@ -203,7 +209,6 @@ export default function IntentDoc() {
             className=" pt-2 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8"
           >
             {
-
               imgsUploaded.length > 0 ?
                 imgsUploaded.map((imageData
                 ) => (
@@ -218,53 +223,40 @@ export default function IntentDoc() {
 
                   <p className="text-xl text-slate-500"> No images uploaded</p>
                 </div>
-
             }
           </ul>
-
-
-
         </div>
-
-
-
-
-      
-      <div className=" py-4 block">
-        <div className="isolate flex divide-x divide-gray-200 rounded-lg shadow" aria-label="Tabs">
-          <Form replace method="post">
-            <input name='intentId' value={intentDoc.intentId} />
-            <input name='humanReadableId' value={intentDoc.humanReadableId} />
-
-          {tabs.map((tab, tabIdx) => (
-            <button
-            value={tab.name}
-            key={tab.name}
-            
-            className={classNames(
-              tab.current ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700',
-              tabIdx === 0 ? 'rounded-l-lg' : '',
-              tabIdx === tabs.length - 1 ? 'rounded-r-lg' : '',
-              'group relative min-w-0 flex-1 overflow-hidden bg-white py-4 px-4 text-center text-sm font-medium hover:bg-gray-50 focus:z-10'
-              )}
-              aria-current={tab.current ? 'page' : undefined}
+        <Form replace method="post">
+          <div className=" py-4 block">
+            <input readOnly name='intentId' hidden value={intentDoc.intentId} />
+            <input readOnly name='humanReadableId' hidden value={intentDoc.humanReadableId} />
+            <div className=" py-3 flex gap-4 justify-end">
+              <button
+                name="_action"
+                value={"accepted"}
+                className="rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
               >
-              <span>{tab.name}</span>
-              <span
-                aria-hidden="true"
-                className={classNames(
-                  tab.current ? 'bg-indigo-500' : 'bg-transparent',
-                  'absolute inset-x-0 bottom-0 h-0.5'
-                  )}
-                  />
-            </button>
-          ))}
-          </Form>
-        </div>
-      </div>
+                Accept
+              </button>
+              <button
+                name="_action"
+                value={"hold"}
+                className="rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
 
+              >
+                Hold
+              </button>
+              <button
+                name="_action"
+                value={"declined"}
+                className="rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              >
+                Decline
+              </button>
+            </div>
+          </div>
+        </Form>
       </div>
-
     </article>
   );
 }
