@@ -1,69 +1,40 @@
 import { Fragment, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
-import {
-  Bars3Icon,
-  BookmarkSquareIcon,
-  FireIcon,
-  HomeIcon,
-  InboxIcon,
-  UserIcon,
-  XMarkIcon,
-} from '@heroicons/react/24/outline'
 import { json, LoaderArgs, redirect } from '@remix-run/node'
 import { requireAuth } from '~/server/auth.server'
 import { getAllIntents } from '~/server/mila.server'
 import { Link, Outlet, useLoaderData } from '@remix-run/react'
-import { EnvelopeIcon, PhoneIcon } from '@heroicons/react/20/solid'
+import { Bars3Icon, EnvelopeIcon, PhoneIcon, XMarkIcon } from '@heroicons/react/20/solid'
 
-const user = {
+const user1 = {
   name: 'Emily Selman',
   email: 'emily.selman@example.com',
   imageUrl:
     'https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
 }
-const navigation = [
-  { name: 'Home', href: '#', icon: HomeIcon },
-  { name: 'Opportunities', href: '/manage/opportunities', icon: FireIcon },
-  { name: 'Bookmarks', href: '#', icon: BookmarkSquareIcon },
-  { name: 'Messages', href: '#', icon: InboxIcon },
-  { name: 'Profile', href: '#', icon: UserIcon },
-]
-const people = [
-  {
-    name: 'Jane Cooper',
-    title: 'Regional Paradigm Technician',
-    role: 'Admin',
-    email: 'janecooper@example.com',
-    telephone: '+1-202-555-0170',
-    imageUrl:
-      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60',
-  },
-  // More people...
-]
 
-// export async function loader({ params, request }: LoaderArgs) {
-//   const user = await requireAuth(request);
+export interface NavBarUser{
+  name: string,
+  email:string,
+  imageUrl: string,
+  settingsUrl:string, 
+}
 
-//   if (user.uid !== '8S2uW3Tj5oPBEhQuIAfEJpaCwQM2') {
-//     redirect('/')
-//   }
-
-//   const submittedIntents = await getAllIntents("milachu92");
-
-//   return json({ submittedIntents })
-
-// }
+export interface NavBarItem {
+  name: string,
+  to: string,
+  icon:React.ForwardRefExoticComponent<React.SVGProps<SVGSVGElement>>,
+}
 
 
 
 
 export default function SideColumnLayout(
-  {
-    children,
-  }:
-    {
-      children: React.ReactNode
-    }
+  props: {
+    children: React.ReactNode,
+    nav: NavBarItem[],
+    navBarUser : NavBarUser
+  }
 ) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
@@ -137,10 +108,10 @@ export default function SideColumnLayout(
                     </div>
                     <nav aria-label="Sidebar" className="mt-5">
                       <div className="space-y-1 px-2">
-                        {navigation.map((item) => (
-                          <a
+                        {props.nav.map((item) => (
+                          <Link
                             key={item.name}
-                            href={item.href}
+                            to={item.to}
                             className="group flex items-center rounded-md p-2 text-base font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                           >
                             <item.icon
@@ -148,25 +119,25 @@ export default function SideColumnLayout(
                               aria-hidden="true"
                             />
                             {item.name}
-                          </a>
+                          </Link>
                         ))}
                       </div>
                     </nav>
                   </div>
                   <div className="flex flex-shrink-0 border-t border-gray-200 p-4">
-                    <a href="#" className="group block flex-shrink-0">
+                    <Link  to={props.navBarUser.settingsUrl} className="group block flex-shrink-0">
                       <div className="flex items-center">
                         <div>
-                          <img className="inline-block h-10 w-10 rounded-full" src={user.imageUrl} alt="" />
+                          <img className="inline-block h-10 w-10 rounded-full" src={props.navBarUser.imageUrl} alt="" />
                         </div>
                         <div className="ml-3">
-                          <p className="text-base font-medium text-gray-700 group-hover:text-gray-900">{user.name}</p>
+                          <p className="text-base font-medium text-gray-700 group-hover:text-gray-900">{props.navBarUser.name}</p>
                           <p className="text-sm font-medium text-gray-500 group-hover:text-gray-700">
                             Account Settings
                           </p>
                         </div>
                       </div>
-                    </a>
+                    </Link>
                   </div>
                 </Dialog.Panel>
               </Transition.Child>
@@ -190,10 +161,10 @@ export default function SideColumnLayout(
                   />
                 </div>
                 <nav aria-label="Sidebar" className="flex flex-col items-center space-y-3 py-6">
-                  {navigation.map((item) => (
+                  {props.nav.map((item) => (
                     <Link
                       key={item.name}
-                      to={item.href}
+                      to={item.to}
                       className="flex items-center rounded-lg p-4 text-indigo-200 hover:bg-indigo-700"
                     >
                       <item.icon className="h-6 w-6" aria-hidden="true" />
@@ -203,13 +174,13 @@ export default function SideColumnLayout(
                 </nav>
               </div>
               <div className="flex flex-shrink-0 pb-5">
-                <a href="#" className="w-full flex-shrink-0">
-                  <img className="mx-auto block h-10 w-10 rounded-full" src={user.imageUrl} alt="" />
+                <Link to={props.navBarUser.settingsUrl} className="w-full flex-shrink-0">
+                  <img className="mx-auto block h-10 w-10 rounded-full" src={props.navBarUser.imageUrl} alt="" />
                   <div className="sr-only">
-                    <p>{user.name}</p>
+                    <p>{props.navBarUser.name}</p>
                     <p>Account settings</p>
                   </div>
-                </a>
+                </Link>
               </div>
             </div>
           </div>
@@ -238,7 +209,7 @@ export default function SideColumnLayout(
               </div>
             </div>
           </div>
-          {children}
+          {props.children}
         </div>
       </div>
     </>
