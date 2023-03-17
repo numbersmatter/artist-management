@@ -1,10 +1,19 @@
 import { EnvelopeIcon, PhoneIcon } from "@heroicons/react/20/solid";
-import { json, LoaderArgs } from "@remix-run/node";
+import { json, LoaderArgs, redirect } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
+import { requireAuth } from "~/server/auth.server";
 import { getAllOportunities } from "~/server/mila.server";
 
 
-export async function loader({params}:LoaderArgs) {
+export async function loader({params, request}:LoaderArgs) {
+  const user = await requireAuth(request);
+
+  const oppId = params.oppId ?? "no id"
+  const profileId = "milachu92"
+
+  if (user.uid !== '8S2uW3Tj5oPBEhQuIAfEJpaCwQM2') {
+    redirect('/')
+  };
   const opportunities= await getAllOportunities("milachu92");
 
   return json({opportunities});

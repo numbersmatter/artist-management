@@ -1,20 +1,21 @@
 import { Fragment, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
-import { Link,  } from '@remix-run/react'
-import { Bars3Icon,  XMarkIcon } from '@heroicons/react/20/solid'
+import { Link, } from '@remix-run/react'
+import { Bars3Icon, XMarkIcon } from '@heroicons/react/20/solid'
+import { ArrowLeftCircleIcon } from '@heroicons/react/24/outline'
 
 
-export interface NavBarUser{
+export interface NavBarUser {
   name: string,
-  email:string,
+  email: string,
   imageUrl: string,
-  settingsUrl:string, 
+  settingsUrl: string,
 }
 
 export interface NavBarItem {
   name: string,
   to: string,
-  icon:React.ForwardRefExoticComponent<React.SVGProps<SVGSVGElement>>,
+  icon: React.ForwardRefExoticComponent<React.SVGProps<SVGSVGElement>>,
 }
 
 
@@ -24,7 +25,7 @@ export default function SideColumnLayout(
   props: {
     children: React.ReactNode,
     nav: NavBarItem[],
-    navBarUser : NavBarUser
+    navBarUser: NavBarUser
   }
 ) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -112,11 +113,18 @@ export default function SideColumnLayout(
                             {item.name}
                           </Link>
                         ))}
+                        <Link
+                          to="/logout"
+                          className="group flex items-center rounded-md p-2 text-base font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                        >
+                          <ArrowLeftCircleIcon className="mr-4 h-6 w-6 text-gray-400 group-hover:text-gray-500" aria-hidden="true" />
+                          <span >Logout</span>
+                        </Link>
                       </div>
                     </nav>
                   </div>
                   <div className="flex flex-shrink-0 border-t border-gray-200 p-4">
-                    <Link  to={props.navBarUser.settingsUrl} className="group block flex-shrink-0">
+                    <Link to={props.navBarUser.settingsUrl} className="group block flex-shrink-0">
                       <div className="flex items-center">
                         <div>
                           <img className="inline-block h-10 w-10 rounded-full" src={props.navBarUser.imageUrl} alt="" />
@@ -162,6 +170,15 @@ export default function SideColumnLayout(
                       <span className="sr-only">{item.name}</span>
                     </Link>
                   ))}
+                  <Link
+                    to="/logout"
+                    className="flex items-center rounded-lg p-4 text-indigo-200 hover:bg-[#2A55B5]"
+                  >
+                    <ArrowLeftCircleIcon className="h-6 w-6" aria-hidden="true" />
+                    <span className="sr-only">Logout</span>
+                  </Link>
+
+
                 </nav>
               </div>
               <div className="flex flex-shrink-0 pb-5">
@@ -171,6 +188,21 @@ export default function SideColumnLayout(
                     <p>{props.navBarUser.name}</p>
                     <p>Account settings</p>
                   </div>
+                </Link>
+
+                <Link to={props.navBarUser.settingsUrl} className="w-full flex-shrink-0">
+                  <img className="mx-auto block h-10 w-10 rounded-full" src={props.navBarUser.imageUrl} alt="" />
+                  <div className="sr-only">
+                    <p>{props.navBarUser.name}</p>
+                    <p>Account settings</p>
+                  </div>
+                </Link>
+                <Link
+                  to="/logout"
+                  className="flex items-center rounded-lg p-4 text-indigo-200 hover:bg-[#2A55B5]"
+                >
+                  <ArrowLeftCircleIcon className="h-6 w-6" aria-hidden="true" />
+                  <span className="sr-only">Logout</span>
                 </Link>
               </div>
             </div>
