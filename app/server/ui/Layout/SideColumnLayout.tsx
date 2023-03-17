@@ -1,17 +1,8 @@
 import { Fragment, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
-import { json, LoaderArgs, redirect } from '@remix-run/node'
-import { requireAuth } from '~/server/auth.server'
-import { getAllIntents } from '~/server/mila.server'
-import { Link, Outlet, useLoaderData } from '@remix-run/react'
-import { Bars3Icon, EnvelopeIcon, PhoneIcon, XMarkIcon } from '@heroicons/react/20/solid'
+import { Link,  } from '@remix-run/react'
+import { Bars3Icon,  XMarkIcon } from '@heroicons/react/20/solid'
 
-const user1 = {
-  name: 'Emily Selman',
-  email: 'emily.selman@example.com',
-  imageUrl:
-    'https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-}
 
 export interface NavBarUser{
   name: string,
@@ -102,8 +93,8 @@ export default function SideColumnLayout(
                     <div className="flex flex-shrink-0 items-center px-4">
                       <img
                         className="h-8 w-auto"
-                        src=""
-                        alt="Your Company"
+                        src="https://firebasestorage.googleapis.com/v0/b/component-sites.appspot.com/o/furrymarketplace%2FFM%20logo%201.png?alt=media&token=c5e02204-27f3-4996-ac93-738f589826fb"
+                        alt="FurBrush"
                       />
                     </div>
                     <nav aria-label="Sidebar" className="mt-5">
@@ -151,13 +142,13 @@ export default function SideColumnLayout(
         {/* Static sidebar for desktop */}
         <div className="hidden lg:flex lg:flex-shrink-0">
           <div className="flex w-20 flex-col">
-            <div className="flex min-h-0 flex-1 flex-col overflow-y-auto bg-indigo-600">
+            <div className="flex min-h-0 flex-1 flex-col overflow-y-auto bg-[#2A9BB5]">
               <div className="flex-1">
-                <div className="flex items-center justify-center bg-indigo-700 py-4">
+                <div className="flex items-center justify-center bg-[#2a9bb5] py-4">
                   <img
                     className="h-8 w-auto"
-                    src=""
-                    alt="Your Company"
+                    src="https://firebasestorage.googleapis.com/v0/b/component-sites.appspot.com/o/furrymarketplace%2FFM%20logo%201.png?alt=media&token=c5e02204-27f3-4996-ac93-738f589826fb"
+                    alt="FurBrush"
                   />
                 </div>
                 <nav aria-label="Sidebar" className="flex flex-col items-center space-y-3 py-6">
@@ -165,7 +156,7 @@ export default function SideColumnLayout(
                     <Link
                       key={item.name}
                       to={item.to}
-                      className="flex items-center rounded-lg p-4 text-indigo-200 hover:bg-indigo-700"
+                      className="flex items-center rounded-lg p-4 text-indigo-200 hover:bg-[#2A55B5]"
                     >
                       <item.icon className="h-6 w-6" aria-hidden="true" />
                       <span className="sr-only">{item.name}</span>
@@ -189,18 +180,18 @@ export default function SideColumnLayout(
         <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
           {/* Mobile top navigation */}
           <div className="lg:hidden">
-            <div className="flex items-center justify-between bg-indigo-600 py-2 px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between bg-[#2a9bb5] py-2 px-4 sm:px-6 lg:px-8">
               <div>
                 <img
                   className="h-8 w-auto"
-                  src="https://tailwindui.com/img/logos/mark.svg?color=white"
-                  alt="Your Company"
+                  src="https://firebasestorage.googleapis.com/v0/b/component-sites.appspot.com/o/furrymarketplace%2FFM%20logo%201.png?alt=media&token=c5e02204-27f3-4996-ac93-738f589826fb"
+                  alt="FurBrush"
                 />
               </div>
               <div>
                 <button
                   type="button"
-                  className="-mr-3 inline-flex h-12 w-12 items-center justify-center rounded-md bg-indigo-600 text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+                  className="-mr-3 inline-flex h-12 w-12 items-center justify-center rounded-md bg-[#2A9BB5] text-white hover:bg-[#2AB58A] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
                   onClick={() => setMobileMenuOpen(true)}
                 >
                   <span className="sr-only">Open sidebar</span>

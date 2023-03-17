@@ -1,6 +1,6 @@
-import { FieldValue } from "firebase-admin/firestore";
+import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import {
-  db,
+  db, SubmittedIntentDoc,
 } from "~/server/db.server";
 
 export const getSubmittedIntents = async (
@@ -78,6 +78,15 @@ export const getOpportunityStatusLists = async (
     getSubmittedIntents(profileId, opportunityId),
   ]);
 
+  const errorIntentDoc: SubmittedIntentDoc = {
+    createdAt:  Timestamp.now(),
+    humanReadableId: "error finding intent-id",
+    opportunityId: "error",
+    status: "submitted",
+    submittedAt: Timestamp.now()
+
+  }
+
 
   const holdStatuses = artistStatuses
     .filter((doc) => doc.reviewStatus === "hold")
@@ -85,7 +94,9 @@ export const getOpportunityStatusLists = async (
       const intentDoc = submittedIntents.find(
         (intent) => intent.intentId === doc.statusId
       );
-      return { ...intentDoc };
+      const docExists = intentDoc ?? errorIntentDoc;
+
+      return { ...docExists, displayCreated: `${docExists.createdAt.toDate().toLocaleDateString('en-us', { weekday:"long", year:"numeric", month:"short", day:"numeric"})} ${docExists.createdAt.toDate().toLocaleTimeString()}`};
     });
   const acceptedStatuses = artistStatuses
     .filter((doc) => doc.reviewStatus === "accepted")
@@ -93,7 +104,10 @@ export const getOpportunityStatusLists = async (
       const intentDoc = submittedIntents.find(
         (intent) => intent.intentId === doc.statusId
       );
-      return { ...intentDoc };
+      const docExists = intentDoc ?? errorIntentDoc;
+
+      return { ...docExists, displayCreated: `${docExists.createdAt.toDate().toLocaleDateString('en-us', { weekday:"long", year:"numeric", month:"short", day:"numeric"})} ${docExists.createdAt.toDate().toLocaleTimeString()}`};
+
     });
   const declinedStatuses = artistStatuses
     .filter((doc) => doc.reviewStatus === "declined")
@@ -101,7 +115,10 @@ export const getOpportunityStatusLists = async (
       const intentDoc = submittedIntents.find(
         (intent) => intent.intentId === doc.statusId
       );
-      return { ...intentDoc };
+      const docExists = intentDoc ?? errorIntentDoc;
+
+      return { ...docExists, displayCreated: `${docExists.createdAt.toDate().toLocaleDateString('en-us', { weekday:"long", year:"numeric", month:"short", day:"numeric"})} ${docExists.createdAt.toDate().toLocaleTimeString()}`};
+
     });
 
   const submittedIds = submittedIntents.map((doc) => doc.intentId);
@@ -111,11 +128,23 @@ export const getOpportunityStatusLists = async (
     (id) => !hasStatusIds.includes(id)
   );
 
-  const needsReviewStatuses = needsReviewIds.map((id) => {
-    const intentDoc = submittedIntents.find((intent) => intent.intentId === id);
+  const needsReviewStatuses = submittedIntents
+  .filter((intentDoc)=>  needsReviewIds.includes(intentDoc.intentId))
+  .map((intentDoc)=>({...intentDoc, displayCreated:`${intentDoc.createdAt.toDate().toLocaleDateString('en-us', { weekday:"long", year:"numeric", month:"short", day:"numeric"})} ${intentDoc.createdAt.toDate().toLocaleTimeString()}` }));
 
-    return { ...intentDoc, intentId: id };
-  });
+  // const needsReviewStatuses = needsReviewIds.map((id) => {
+  //   const intentDoc = submittedIntents.find((intent) => intent.intentId === id);
+    
 
-  return { needsReviewStatuses, holdStatuses, acceptedStatuses, declinedStatuses}
+  //   return { ...intentDoc, intentId: id };
+  // });
+
+  const intents= {
+    review: needsReviewStatuses,
+    hold: holdStatuses,
+    accepted: acceptedStatuses,
+    declined: declinedStatuses,
+  };
+
+  return intents;
 };

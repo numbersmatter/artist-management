@@ -1,13 +1,9 @@
-import { json, LoaderArgs, redirect } from "@remix-run/node";
+import type { LoaderArgs} from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { requireAuth } from "~/server/auth.server";
 import { getOpportunityStatusLists } from "~/server/routes-logic/opportunities/opportunities.server";
 
-const stats = [
-  { name: 'Needs Review', stat: '71,897' },
-  { name: 'Hold', stat: '58.16%' },
-  { name: 'Accepted', stat: '24.57%' },
-]
 
 export async function loader({ params, request }: LoaderArgs) {
   const user = await requireAuth(request);
@@ -19,16 +15,11 @@ export async function loader({ params, request }: LoaderArgs) {
     redirect('/')
   };
   
-  const { 
-    needsReviewStatuses,
-    holdStatuses, 
-    declinedStatuses,
-    acceptedStatuses 
-  }= await getOpportunityStatusLists(profileId, oppId)
+  const intents= await getOpportunityStatusLists(profileId, oppId)
   const overviewStats = [
-    { name: 'Needs Review', stat: `${needsReviewStatuses.length}` },
-    { name: 'Hold', stat: `${holdStatuses.length}` },
-    { name: 'Accepted', stat: `${acceptedStatuses.length}` },
+    { name: 'Needs Review', stat: `${intents.review.length}` },
+    { name: 'Hold', stat: `${intents.hold.length}` },
+    { name: 'Accepted', stat: `${intents.accepted.length}` },
   ]
 
 

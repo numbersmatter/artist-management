@@ -1,8 +1,12 @@
-import type { LoaderArgs} from "@remix-run/node";
+import { ArrowDownLeftIcon, ArrowLeftIcon } from "@heroicons/react/20/solid";
+import type { LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import {  NavLink, Outlet, useLoaderData } from "@remix-run/react";
+import { NavLink, Outlet, useLoaderData } from "@remix-run/react";
+import { useState } from "react";
 import { requireAuth } from "~/server/auth.server";
 import { getOpportunityStatusLists } from "~/server/routes-logic/opportunities/opportunities.server";
+import NavCardList from "~/server/ui/Layout/navCardList";
+import SlideOut from "~/server/ui/Layout/SlideOut";
 
 
 
@@ -17,15 +21,34 @@ export async function loader({ params, request }: LoaderArgs) {
     redirect('/')
   };
 
-  const { 
-    needsReviewStatuses,
-    holdStatuses, 
-    declinedStatuses,
-    acceptedStatuses 
-  }= await getOpportunityStatusLists(profileId, oppId)
+  const intents = await getOpportunityStatusLists(profileId, oppId);
+
+  const navIntents = [
+    {
+      title: "Needs Review",
+      category: "review",
+      cardList: intents.review
+    },
+    {
+      title: "Hold",
+      category: "hold",
+      cardList: intents.hold,
+    },
+    {
+      title: "Accepted",
+      category: "accepted",
+      cardList: intents.accepted,
+    },
+    {
+      title: "Declined",
+      category: "declined",
+      cardList: intents.declined,
+    },
+
+  ]
 
 
-  return json({ holdStatuses, needsReviewStatuses, declinedStatuses, acceptedStatuses })
+  return json({ intents, navIntents })
 
 }
 
@@ -33,15 +56,10 @@ export async function loader({ params, request }: LoaderArgs) {
 
 
 export default function OpportunitiesMultiColumnLayout() {
-  const {
-   
-    holdStatuses,
-    needsReviewStatuses,
-    declinedStatuses,
-    acceptedStatuses
-  } = useLoaderData<typeof loader>()
+  const { intents, navIntents } = useLoaderData<typeof loader>();
+  const [open, setOpen] = useState<boolean>(false)
 
-
+  const intentsOrder = ['review', 'hold', 'accepted', 'declined']
 
   return (
     <main className="flex flex-1 overflow-hidden">
@@ -50,6 +68,36 @@ export default function OpportunitiesMultiColumnLayout() {
         aria-labelledby="primary-heading"
         className="flex h-full min-w-0 flex-1 flex-col overflow-y-auto lg:order-last"
       >
+        <div className="block py-2 px-2 lg:hidden">
+          <button
+            type="button"
+            onClick={() => setOpen(!open)}
+            className="inline-flex items-center gap-x-1.5 rounded-md bg-[#9BB52A] py-1.5 px-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          >
+            <ArrowLeftIcon className="-ml-0.5 h-5 w-5" aria-hidden="true" />
+            Choose Another Response
+          </button>
+          <SlideOut open={open} setOpen={setOpen}>
+            <nav className="h-full overflow-y-auto" aria-label="Directory">
+              {
+                navIntents.map((category) =>
+                  <NavCardList
+                    key={category.title}
+                    title={category.title}
+                    //@ts-ignore 
+                    category={category.category}
+                    // @ts-ignore 
+                    cardList={category.cardList} />
+
+                )
+              }
+
+
+            </nav>
+
+          </SlideOut>
+
+        </div>
         <h1 id="primary-heading" className="sr-only">
           Request details
         </h1>
@@ -63,111 +111,18 @@ export default function OpportunitiesMultiColumnLayout() {
         <div className="relative flex h-full w-96 flex-col overflow-y-auto border-r border-gray-200 bg-white">
           {/* Your content */}
           <nav className="h-full overflow-y-auto" aria-label="Directory">
-            <div key={"Needs Review"} className="relative">
-              <div className="sticky top-0 z-10 border-t border-b border-gray-200 bg-orange-400 px-6 py-1 text-sm font-medium text-gray-500">
-                <h3 className="text-xl" >Needs Review ( {needsReviewStatuses.length} )</h3>
-              </div>
-              <ul className="relative z-0 divide-y divide-gray-200">
-                {needsReviewStatuses.map((intentDoc) => (
-                  <li key={intentDoc.intentId} className="bg-white">
-                    <NavLink to={intentDoc.intentId ?? "error"}
-                      className={({ isActive }) => isActive ? "relative flex items-center space-x-3 px-6 py-5 bg-slate-400" : "relative flex items-center space-x-3 px-6 py-5 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-500 hover:bg-gray-50"}
-                    >
+            {
+              navIntents.map((category) =>
+                <NavCardList
+                  key={category.title}
+                  title={category.title}
+                  //@ts-ignore 
+                  category={category.category}
+                  // @ts-ignore 
+                  cardList={category.cardList} />
 
-                      <div className="min-w-0 flex-1">
-
-                        {/* Extend touch target to entire panel */}
-                        <span className="absolute inset-0" aria-hidden="true" />
-                        <p className="text-sm font-medium text-gray-900">{intentDoc.humanReadableId}</p>
-                        <p className="truncate text-sm text-gray-500">hold role</p>
-                      </div>
-                    </NavLink>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div key={"Hold"} className="relative">
-              <div className="sticky top-0 z-10 border-t border-b border-gray-200 bg-yellow-300 px-6 py-1 text-sm font-medium text-gray-500">
-                <h3 className="text-xl">Hold ( {holdStatuses.length} ) </h3>
-              </div>
-              <ul className="relative z-0 divide-y divide-gray-200">
-                {holdStatuses.map((intentDoc) => (
-                  <li key={intentDoc.intentId} className="bg-white">
-                    <NavLink to={intentDoc.intentId ?? "error"}
-                      className={({ isActive }) => isActive ? "relative flex items-center space-x-3 px-6 py-5 bg-slate-400" : "relative flex items-center space-x-3 px-6 py-5 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-500 hover:bg-gray-50"}
-                    >
-                      <div className="flex-shrink-0">
-                        {/* <img className="h-10 w-10 rounded-full" src={intentDoc.imageUrl} alt="" /> */}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div
-                        //  to={intentDoc.intentId ?? "error"} 
-                        //   className={ ({isActive})=> isActive ?  "bg-slate-400" :  "focus:outline-none" }
-                        >
-                          {/* Extend touch target to entire panel */}
-                          <span className="absolute inset-0" aria-hidden="true" />
-                          <p className="text-sm font-medium text-gray-900">{intentDoc.humanReadableId}</p>
-                          <p className="truncate text-sm text-gray-500">hold role</p>
-                        </div>
-                      </div>
-                    </NavLink>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div key={"Accepted"} className="relative">
-              <div className="sticky top-0 z-10 border-t border-b border-gray-200 bg-green-400 px-6 py-1 text-sm font-medium text-gray-500">
-                <h3 className="text-xl">Accepted ( {acceptedStatuses.length} )</h3>
-              </div>
-              <ul className="relative z-0 divide-y divide-gray-200">
-                {acceptedStatuses.map((intentDoc) => (
-                  <li key={intentDoc.intentId} className="bg-white">
-                    <NavLink to={intentDoc.intentId ?? "error"}
-                      className={({ isActive }) => isActive ? "relative flex items-center space-x-3 px-6 py-5 bg-slate-400" : "relative flex items-center space-x-3 px-6 py-5 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-500 hover:bg-gray-50"}
-                    >
-                      <div className="flex-shrink-0">
-                        {/* <img className="h-10 w-10 rounded-full" src={intentDoc.imageUrl} alt="" /> */}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div
-                        >
-                          {/* Extend touch target to entire panel */}
-                          <span className="absolute inset-0" aria-hidden="true" />
-                          <p className="text-sm font-medium text-gray-900">{intentDoc.humanReadableId}</p>
-                          <p className="truncate text-sm text-gray-500">hold role</p>
-                        </div>
-                      </div>
-                    </NavLink>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div key={"Declined"} className="relative">
-              <div className="sticky top-0 z-10 border-t border-b border-gray-200 bg-red-300 px-6 py-1 text-sm font-medium text-gray-500">
-                <h3 className="text-xl">Declined ( {declinedStatuses.length} )</h3>
-              </div>
-              <ul className="relative z-0 divide-y divide-gray-200">
-                {declinedStatuses.map((intentDoc) => (
-                  <li key={intentDoc.intentId} className="bg-white">
-                    <NavLink to={intentDoc.intentId ?? "error"}
-                      className={({ isActive }) => isActive ? "relative flex items-center space-x-3 px-6 py-5 bg-slate-400" : "relative flex items-center space-x-3 px-6 py-5 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-500 hover:bg-gray-50"}
-                    >
-                      <div className="flex-shrink-0">
-                        {/* <img className="h-10 w-10 rounded-full" src={intentDoc.imageUrl} alt="" /> */}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div >
-                          {/* Extend touch target to entire panel */}
-                          <span className="absolute inset-0" aria-hidden="true" />
-                          <p className="text-sm font-medium text-gray-900">{intentDoc.humanReadableId}</p>
-                          <p className="truncate text-sm text-gray-500">hold role</p>
-                        </div>
-                      </div>
-                    </NavLink>
-                  </li>
-                ))}
-              </ul>
-            </div>
+              )
+            }
 
 
           </nav>
