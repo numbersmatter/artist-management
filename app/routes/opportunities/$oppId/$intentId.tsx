@@ -3,7 +3,6 @@ import { json, redirect } from "@remix-run/node";
 import { Form, Link, useLoaderData } from "@remix-run/react";
 import { requireAuth } from "~/server/auth.server";
 import { changeReviewStatus, getIntentResponses, readIntentDoc, readMilaImageUpload } from "~/server/mila.server";
-import type { Field } from "~/server/routes-logic/formBuilder/types";
 
 export async function action({ params, request }: ActionArgs) {
   const opportunityId = params.oppId ?? "noid"
@@ -120,18 +119,6 @@ export async function loader({ params, request }: LoaderArgs) {
   return json({ intentDoc, responses, responsesObj, imgsUploaded });
 }
 
-const tabs = [
-  { name: 'Accept', href: '#', current: true },
-  { name: 'Decline', href: '#', current: false },
-  { name: 'Hold', href: '#', current: false },
-
-]
-
-//@ts-ignore
-function classNames(...classes) {
-  return classes.filter(Boolean).join(' ')
-}
-
 
 export default function IntentDoc() {
   const { intentDoc, responsesObj, imgsUploaded } = useLoaderData<typeof loader>()
@@ -213,9 +200,9 @@ export default function IntentDoc() {
                 imgsUploaded.map((imageData
                 ) => (
                   <li key={imageData.url} className="relative">
-                    <Link to={imageData.url} className="group aspect-w-10 aspect-h-7 block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
+                    <a href={imageData.url} target="_blank" rel="noreferrer" className="group aspect-w-10 aspect-h-7 block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
                       <img src={imageData.url} alt="" className="pointer-events-none object-cover group-hover:opacity-75" />
-                    </Link>
+                    </a>
                     <p className="pointer-events-none mt-2 block truncate text-sm font-medium text-gray-900">{imageData.description}</p>
                   </li>
                 ))

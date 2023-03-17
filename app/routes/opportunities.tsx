@@ -1,15 +1,14 @@
 import { Outlet, useLoaderData } from "@remix-run/react";
 import SideColumnLayout from "~/server/ui/Layout/SideColumnLayout";
 import {
-  Bars3Icon,
   BookmarkSquareIcon,
   FireIcon,
   HomeIcon,
   InboxIcon,
   UserIcon,
-  XMarkIcon,
 } from '@heroicons/react/24/outline'
-import { json, LoaderArgs } from "@remix-run/node";
+import type { LoaderArgs } from "@remix-run/node";
+import { json } from "@remix-run/node";
 
 
 
@@ -42,7 +41,7 @@ export async function loader({params}:LoaderArgs) {
 
 
 export default function OpportunitiesLayout() {
-  const { user, nav} = useLoaderData<typeof loader>();
+  const { user,} = useLoaderData<typeof loader>();
 
   return (
     <SideColumnLayout

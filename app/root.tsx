@@ -13,7 +13,7 @@ import styles from "./styles/app.css"
 
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
-  title: "New Remix App",
+  title: "Milachu Management",
   viewport: "width=device-width,initial-scale=1",
 });
 
@@ -47,7 +47,7 @@ export function Document({
 
 export default function App() {
   return (
-    <Document>
+    <Document title="New Title">
       {/* <CardRootLayout > */}
         <Outlet />
       {/* </CardRootLayout> */}

@@ -1,7 +1,8 @@
-import { json, LoaderArgs, redirect } from "@remix-run/node";
-import { Link, NavLink, Outlet, useLoaderData } from "@remix-run/react";
+import type { LoaderArgs} from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
+import {  NavLink, Outlet, useLoaderData } from "@remix-run/react";
 import { requireAuth } from "~/server/auth.server";
-import { getAllArtistStatuses, getAllIntents } from "~/server/mila.server";
+import { getOpportunityStatusLists } from "~/server/routes-logic/opportunities/opportunities.server";
 
 
 
@@ -10,46 +11,21 @@ export async function loader({ params, request }: LoaderArgs) {
   const user = await requireAuth(request);
 
   const oppId = params.oppId ?? "no id"
+  const profileId = "milachu92"
 
   if (user.uid !== '8S2uW3Tj5oPBEhQuIAfEJpaCwQM2') {
     redirect('/')
   };
 
-  const artistStatuses = await getAllArtistStatuses("milachu92", oppId)
-  const submittedIntents = await getAllIntents("milachu92");
-
-  const holdStatuses = artistStatuses
-    .filter(doc => doc.reviewStatus === "hold")
-    .map((doc) => {
-      const intentDoc = submittedIntents.find(intent => intent.intentId === doc.statusId)
-      return { ...intentDoc }
-    })
-  const acceptedStatuses = artistStatuses
-    .filter(doc => doc.reviewStatus === "accepted")
-    .map((doc) => {
-      const intentDoc = submittedIntents.find(intent => intent.intentId === doc.statusId)
-      return { ...intentDoc }
-    })
-  const declinedStatuses = artistStatuses
-    .filter(doc => doc.reviewStatus === "declined")
-    .map((doc) => {
-      const intentDoc = submittedIntents.find(intent => intent.intentId === doc.statusId)
-      return { ...intentDoc }
-    })
-
-  const submittedIds = submittedIntents.map(doc => doc.intentId);
-  const hasStatusIds = artistStatuses.map(doc => doc.statusId)
-
-  const needsReviewIds = submittedIds.filter(id => !hasStatusIds.includes(id));
-
-  const needsReviewStatuses = needsReviewIds.map(id => {
-    const intentDoc = submittedIntents.find(intent => intent.intentId === id);
-
-    return { ...intentDoc, intentId: id }
-  })
+  const { 
+    needsReviewStatuses,
+    holdStatuses, 
+    declinedStatuses,
+    acceptedStatuses 
+  }= await getOpportunityStatusLists(profileId, oppId)
 
 
-  return json({ submittedIntents, holdStatuses, needsReviewStatuses, declinedStatuses, acceptedStatuses })
+  return json({ holdStatuses, needsReviewStatuses, declinedStatuses, acceptedStatuses })
 
 }
 
@@ -58,7 +34,7 @@ export async function loader({ params, request }: LoaderArgs) {
 
 export default function OpportunitiesMultiColumnLayout() {
   const {
-    submittedIntents,
+   
     holdStatuses,
     needsReviewStatuses,
     declinedStatuses,

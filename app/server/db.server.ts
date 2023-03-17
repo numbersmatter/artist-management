@@ -49,8 +49,15 @@ export interface IntentDoc {
   opportunityId:string,
   status: "in-progress" | "submitted";
   submittedAt?: Timestamp,
-  questionOrder: string[],
-  questionStatus: {[key:string]: boolean},
+  // questionOrder: string[],
+  // questionStatus: {[key:string]: boolean},
+}
+export interface SubmittedIntentDoc {
+  createdAt:Timestamp,
+  humanReadableId: string,
+  opportunityId:string,
+  status: "in-progress" | "submitted";
+  submittedAt: Timestamp,
 }
 
 export interface ArtistIntentReview{
@@ -81,16 +88,15 @@ const versionUrl = "testCollection/version6"
 
 
 export const db = {
-  userNotes: (uid: string) => dataPoint<Note>(`users/${uid}/notes`),
   profile : ()=> dataPoint<Profile>(`${versionUrl}/profile`),
   faqs: (profileId:string) =>dataPoint<FAQ>(`${versionUrl}/profile/${profileId}/faqs`),
   faqsWrite: (profileId:string) =>dataPoint<FAQwrite>(`${versionUrl}/profile/${profileId}/faqs`),
   opportunites: (profileId:string) =>dataPoint<Opportunity>(`${versionUrl}/profile/${profileId}/opportunities`),
   intents: (profileId:string) => dataPoint<IntentDoc>(`${versionUrl}/profile/${profileId}/intents`),
   artistReview: (profileId:string) => dataPoint<ArtistIntentReview>(`${versionUrl}/profile/${profileId}/artistReview`),
-  questions: (profileId:string) => dataPoint<Questionform>(`${versionUrl}/profile/${profileId}/questions`),
   responses: (profileId: string, intentId:string)=> dataPoint<ResponseDoc>(`${versionUrl}/profile/${profileId}/intents/${intentId}/responses`), 
   imgUploads: (profileId: string, intentId:string)=> dataPoint<ImgUploadDoc>(`${versionUrl}/profile/${profileId}/intents/${intentId}/imgUploads`), 
-  demo: ()=> dataPoint<DndDoc>('demo')
+  demo: ()=> dataPoint<DndDoc>('demo'),
+  submittedIntents: (profileId:string ) => dataPoint<SubmittedIntentDoc>(`${versionUrl}/profile/${profileId}/intents`).where("status", "==", "submitted")
 
 };
