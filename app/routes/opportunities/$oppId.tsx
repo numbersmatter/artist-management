@@ -1,7 +1,7 @@
-import { ArrowDownLeftIcon, ArrowLeftIcon } from "@heroicons/react/20/solid";
+import { ArrowLeftIcon } from "@heroicons/react/20/solid";
 import type { LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { NavLink, Outlet, useLoaderData } from "@remix-run/react";
+import {  Outlet, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 import { requireAuth } from "~/server/auth.server";
 import { getOpportunityStatusLists } from "~/server/routes-logic/opportunities/opportunities.server";
@@ -44,11 +44,9 @@ export async function loader({ params, request }: LoaderArgs) {
       category: "declined",
       cardList: intents.declined,
     },
-
   ]
 
-
-  return json({ intents, navIntents })
+  return json({ navIntents })
 
 }
 
@@ -56,10 +54,9 @@ export async function loader({ params, request }: LoaderArgs) {
 
 
 export default function OpportunitiesMultiColumnLayout() {
-  const { intents, navIntents } = useLoaderData<typeof loader>();
+  const { navIntents } = useLoaderData<typeof loader>();
   const [open, setOpen] = useState<boolean>(false)
 
-  const intentsOrder = ['review', 'hold', 'accepted', 'declined']
 
   return (
     <main className="flex flex-1 overflow-hidden">
@@ -88,15 +85,10 @@ export default function OpportunitiesMultiColumnLayout() {
                     category={category.category}
                     // @ts-ignore 
                     cardList={category.cardList} />
-
                 )
               }
-
-
             </nav>
-
           </SlideOut>
-
         </div>
         <h1 id="primary-heading" className="sr-only">
           Request details
@@ -120,36 +112,9 @@ export default function OpportunitiesMultiColumnLayout() {
                   category={category.category}
                   // @ts-ignore 
                   cardList={category.cardList} />
-
               )
             }
-
-
           </nav>
-          <h2>Needs Review2</h2>
-          <p>Total Number</p>
-          <ul className="grid grid-cols-1 gap-6">
-            {/* 
-          {submittedIntents.map((intentDoc) => (
-            <li key={intentDoc.intentId} className="col-span-1 divide-y divide-gray-200 rounded-lg bg-white shadow">
-              <div className="flex w-full items-center justify-between space-x-6 p-6">
-                <div className="flex-1 truncate">
-                  <div className="flex items-center space-x-3">
-                    <Link to={intentDoc.intentId} className="truncate text-sm font-medium text-gray-900">{intentDoc.humanReadableId}</Link>
-                    <span className="inline-block flex-shrink-0 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
-                      {intentDoc.status}
-                    </span>
-                  </div>
-                  <p className="mt-1 truncate text-sm text-gray-500">{intentDoc.intentId}</p>
-                </div>
-             
-              </div>
-              <div>
-                
-              </div>
-            </li>
-          ))} */}
-          </ul>
         </div>
       </aside>
     </main>

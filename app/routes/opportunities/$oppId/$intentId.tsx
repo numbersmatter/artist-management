@@ -1,6 +1,6 @@
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Form, Link, useLoaderData } from "@remix-run/react";
+import { Form, useLoaderData } from "@remix-run/react";
 import { requireAuth } from "~/server/auth.server";
 import { changeReviewStatus, getIntentResponses, readIntentDoc, readMilaImageUpload } from "~/server/mila.server";
 
@@ -13,18 +13,19 @@ export async function action({ params, request }: ActionArgs) {
   let { _action, ...values } = intialFormData;
 
   const intentId = values.intentId as string;
-  const humanReadableId = values.humanReadableId as string
+  const humanReadableId = values.humanReadableId as string;
+  const newStatus = _action as "hold" | "accepted" | "declined";
 
+  return await changeReviewStatus(profileId, intentId, opportunityId, humanReadableId, newStatus)
 
-  if (_action === "hold") {
-    return await changeReviewStatus(profileId, intentId, opportunityId, humanReadableId, "hold")
-  }
-  if (_action === "accepted") {
-    return await changeReviewStatus(profileId, intentId, opportunityId, humanReadableId, "accepted")
-  }
-  if (_action === "declined") {
-    return await changeReviewStatus(profileId, intentId, opportunityId, humanReadableId, "declined")
-  }
+  // if (_action === "hold") {
+  // }
+  // if (_action === "accepted") {
+  //   return await changeReviewStatus(profileId, intentId, opportunityId, humanReadableId, "accepted")
+  // }
+  // if (_action === "declined") {
+  //   return await changeReviewStatus(profileId, intentId, opportunityId, humanReadableId, "declined")
+  // }
 
 };
 
@@ -134,6 +135,7 @@ export default function IntentDoc() {
         </div>
         <div className="mt-5 border-t border-gray-200">
           <dl className="sm:divide-y sm:divide-gray-200">
+            {/* data rows begin here */}
             <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5">
               <dt className="text-sm font-medium text-gray-500">Email</dt>
               <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
@@ -188,6 +190,7 @@ export default function IntentDoc() {
                 {responsesObj.step7["additionalInfo"]}
               </dd>
             </div>
+            {/* end data table  */}
           </dl>
         </div>
         <div>
