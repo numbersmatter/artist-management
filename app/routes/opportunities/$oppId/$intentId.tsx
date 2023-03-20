@@ -135,17 +135,26 @@ export default function IntentDoc() {
         </div>
         <div className="mt-5 border-t border-gray-200">
           <dl className="sm:divide-y sm:divide-gray-200">
-            {/* data rows begin here */}
-            <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5">
+
+            <div className="py-4 border-t sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5">
               <dt className="text-sm font-medium text-gray-500">Email</dt>
               <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
                 {responsesObj.step1["email"]}
               </dd>
             </div>
-            <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5">
+          </dl>
+          <dl className="sm:divide-y sm:divide-gray-200">
+
+            <div className="py-4  border-t sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5">
               <dt className="text-sm font-medium text-gray-500">Title</dt>
               <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{responsesObj.step2["title"]}</dd>
             </div>
+          </dl>
+
+
+          <dl className="sm:divide-y sm:divide-gray-200">
+            {/* data rows begin here */}
+
             <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5">
               <dt className="text-sm font-medium text-gray-500">Number of Characters</dt>
               <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
@@ -190,6 +199,35 @@ export default function IntentDoc() {
                 {responsesObj.step7["additionalInfo"]}
               </dd>
             </div>
+            <div className="py-4 ">
+              <dt className="text-sm font-medium text-gray-500">
+                Character References
+              </dt>
+              <dd className="mt-1 text-sm text-gray-900 ">
+                <ul
+                  className=" pt-2 grid grid-cols-2 gap-x-4 gap-y-8  "
+                >
+                  {
+                    imgsUploaded.length > 0 ?
+                      imgsUploaded.map((imageData
+                      ) => (
+                        <li key={imageData.url} className="relative">
+                          <a href={imageData.url} target="_blank" rel="noreferrer" className="group aspect-w-10 aspect-h-7 block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
+                            <img src={imageData.url} alt="" className="pointer-events-none object-cover group-hover:opacity-75" />
+                          </a>
+                          <p className="pointer-events-none mt-2 block truncate text-sm font-medium text-gray-900">{imageData.description}</p>
+                        </li>
+                      ))
+                      : <div className="mx-auto ">
+
+                        <p className="text-xl text-slate-500"> No images uploaded</p>
+                      </div>
+                  }
+                </ul>
+              </dd>
+            </div>
+
+
             {/* end data table  */}
           </dl>
         </div>
