@@ -98,5 +98,4 @@ export const db = {
   imgUploads: (profileId: string, intentId:string)=> dataPoint<ImgUploadDoc>(`${versionUrl}/profile/${profileId}/intents/${intentId}/imgUploads`), 
   demo: ()=> dataPoint<DndDoc>('demo'),
   submittedIntents: (profileId:string ) => dataPoint<SubmittedIntentDoc>(`${versionUrl}/profile/${profileId}/intents`).where("status", "==", "submitted")
-
 };
